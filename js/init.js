@@ -77,8 +77,12 @@ function handleKeyUp(event) {
 }
 
 function init() {
-
-    window.RANDOM_MAP_VALUE = random(0);
+    var urlobj = (new Util()).getUrlObject(window.location.href);
+    if (urlobj.parameters.seed !== undefined) {
+        window.RANDOM_MAP_VALUE = random(urlobj.parameters.seed);
+    } else {
+        window.RANDOM_MAP_VALUE = random(Math.random());
+    }
 
     //find canvas and load images, wait for last image to load
     window.canvas = document.getElementById("html5Canvas");
