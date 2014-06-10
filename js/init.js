@@ -24,7 +24,6 @@ var map_go_right = false;
 var map_go_up = false;
 var map_go_down = false;
 
-
 //allow for WASD and arrow control scheme
 function handleKeyDown(event) {
     switch (event.keyCode) {
@@ -54,7 +53,6 @@ function handleKeyDown(event) {
     }
 }
 
-
 function handleKeyUp(event) {
     switch (event.keyCode) {
         case KEYCODE_A:
@@ -83,6 +81,7 @@ function init() {
     } else {
         window.RANDOM_MAP_VALUE = random(Math.random());
     }
+    window.RANDOM_TREE_VALUE = random("TREE_" + window.RANDOM_MAP_VALUE);
 
     //find canvas and load images, wait for last image to load
     window.canvas = document.getElementById("html5Canvas");
@@ -113,14 +112,15 @@ function reset() {
 function startGame() {
     window.terrainarray = createArray(MAPSIZE, MAPSIZE);
     window.tilearray = createArray(MAPSIZE, MAPSIZE);
+    window.treemaparray = createArray(MAPSIZE, MAPSIZE);
+    window.treearray = createArray(MAPSIZE, MAPSIZE);
     window.terrain = new Terrain(MAPSIZE, MAPSIZE);
 }
 
-
 function tick(event) {
-
+    window.position_changed = false;
     window.terrain.update(event);
-
+    window.forest.update(event);
     window.fpsCounter.text = Math.round(window.createjs.Ticker.getMeasuredFPS()) + " FPS";
 
     // update the stage:
@@ -131,7 +131,10 @@ function random(seed) {
     if (typeof seed === 'string' || seed instanceof String) {
         String.prototype.hashCode = function () {
             var hash = 0, i, chr, len;
-            if (this.length == 0) return hash;
+            if (this.length === 0)
+            {
+                return hash;
+            }
             for (i = 0, len = this.length; i < len; i++) {
                 chr = this.charCodeAt(i);
                 hash = ((hash << 5) - hash) + chr;

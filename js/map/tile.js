@@ -21,13 +21,13 @@
         this.info.height = tileinfo.height;
         var tilecurve;
         if (this.info.height < window.boundaries.water) {
-            this.info.type = 'water';
+            tileinfo.type = 'water';
             tilecurve = getTileCurve(x, y);
             if (tilecurve !== 'center') {
                 ground.gotoAndStop("dirt_center");
                 this.addChild(ground);
             } else {
-                var rand = window.random(this.info.type + "_" + this.info.height + x + y);
+                var rand = window.random(tileinfo.type + "_" + this.info.height + x + y);
                 if (rand > 0.98) {
                     tilecurve = "anomaly_1";
                 } else if (rand > 0.96) {
@@ -37,11 +37,11 @@
                 } 
             }
 
-            overlay.gotoAndStop(this.info.type + "_" + tilecurve);
+            overlay.gotoAndStop(tileinfo.type + "_" + tilecurve);
             this.addChild(overlay);
         } else if (this.info.height < window.boundaries.dirt) {
-            this.info.type = 'dirt';
-            var rand = window.random(this.info.type + "_" + this.info.height + x + y);
+            tileinfo.type = 'dirt';
+            var rand = window.random(tileinfo.type + "_" + this.info.height + x + y);
             if (rand > 0.98) {
                 ground.gotoAndStop("dirt_anomaly_1");
             } else if (rand > 0.95) {
@@ -53,13 +53,13 @@
             }
             this.addChild(ground);
         } else if (this.info.height < window.boundaries.grass) {
-            this.info.type = 'grass';
+            tileinfo.type = 'grass';
             tilecurve = getTileCurve(x, y);
             if (tilecurve !== 'center') {
                 ground.gotoAndStop("dirt_center");
                 this.addChild(ground);
             } else {
-                var rand = window.random(this.info.type + "_" + this.info.height + x + y);
+                var rand = window.random(tileinfo.type + "_" + this.info.height + x + y);
                 if (rand > 0.98) {
                     tilecurve = "anomaly_1";
                 } else if (rand > 0.92) {
@@ -68,7 +68,7 @@
                     tilecurve = "anomaly_3";
                 }
             }
-            overlay.gotoAndStop(this.info.type + "_" + tilecurve);
+            overlay.gotoAndStop(tileinfo.type + "_" + tilecurve);
             this.addChild(overlay);
             if (tileinfo.mountain_solid !== undefined) {
                 var mountain_solid_image = new createjs.BitmapAnimation(window.terrain_spritesheet);
@@ -85,7 +85,7 @@
                 this.addChild(mountain_foot_image);
             }
         } else {
-            this.info.type = 'mountain';
+            tileinfo.type = 'mountain';
             tilecurve = getTileCurve(x, y);
             if (tilecurve !== 'center') {
                 ground.gotoAndStop("grass_center");
@@ -115,7 +115,7 @@
                 paintoverlay = true;
             }
             if (paintoverlay === true) {
-                overlay.gotoAndStop(this.info.type + "_" + tilecurve);
+                overlay.gotoAndStop(tileinfo.type + "_" + tilecurve);
                 this.addChild(overlay);
             }
             if (y + 1 < MAPSIZE) {

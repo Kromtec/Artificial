@@ -18,6 +18,13 @@ function ContentManager() {
 
         window.preload.loadManifest([
             { id: "terrain_atlas", src: "img/terrain_atlas.png" },
+            { id: "broadleaf_small", src: "img/trees/broadleaf_small.png" },
+            { id: "broadleaf_big", src: "img/trees/broadleaf_big.png" },
+            { id: "broadleaf_very_big", src: "img/trees/broadleaf_very_big.png" },
+            { id: "broadleaf_cone", src: "img/trees/broadleaf_cone.png" },
+            { id: "conifer_big", src: "img/trees/conifer_big.png" },
+            { id: "conifer_medium", src: "img/trees/conifer_medium.png" },
+            { id: "conifer_slim", src: "img/trees/conifer_slim.png" },
         ]);
 
         window.progressbar.text("Loading images...");

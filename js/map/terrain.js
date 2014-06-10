@@ -115,12 +115,11 @@
         window.noise.seed(window.RANDOM_MAP_VALUE);
         window.roughness = TILESIZE * 1.8;
 
-        window.current_heightmap_column = 0;
+        window.current_column = 0;
         setTimeout(generate_heightmap, 10);
     };
 
     terrain.prototype.update = function (event) {
-        var position_changed = false;
         var delta = Math.floor(this.navspeed * (event.delta / 1000));
         if (map_go_left) {
             this.x += delta;
@@ -150,29 +149,27 @@
             var new_min_tile_x = getMinXTileNumber(this.x);
             if (this.current_min_tile_x !== new_min_tile_x) {
                 this.current_min_tile_x = new_min_tile_x;
-                position_changed = true;
+                window.position_changed = true;
             }
             var new_max_tile_x = getMaxXTileNumber(this.x);
             if (this.current_max_tile_x !== new_max_tile_x) {
                 this.current_max_tile_x = new_max_tile_x;
-                position_changed = true;
+                window.position_changed = true;
             }
         }
         if (map_go_up || map_go_down) {
             var new_min_tile_y = getMinYTileNumber(this.y);
             if (this.current_min_tile_y !== new_min_tile_y) {
                 this.current_min_tile_y = new_min_tile_y;
-                position_changed = true;
+                window.position_changed = true;
             }
             var new_max_tile_y = getMaxYTileNumber(this.y);
             if (this.current_max_tile_y !== new_max_tile_y) {
                 this.current_max_tile_y = new_max_tile_y;
-                position_changed = true;
+                window.position_changed = true;
             }
         }
-
-
-        if (position_changed === true) {
+        if (window.position_changed === true) {
             var childsToRemove = [];
             var shape_count = this.getNumChildren() - 1;
             for (var i = 0; i <= shape_count; i++) {
@@ -187,10 +184,11 @@
             }
             for (var x = this.current_min_tile_x ; x < this.current_max_tile_x ; x++) {
                 for (var y = this.current_min_tile_y ; y < this.current_max_tile_y ; y++) {
+                    // TILES
                     var tile = window.tilearray[x][y];
                     if (tile !== undefined) {
                         if (this.contains(tile) === false && isInVisibleArea(tile) === true) {
-                            this.addChild(tile);
+                            this.addChildAt(tile, 0);
                         }
                     }
                 }
@@ -199,7 +197,7 @@
     };
 
     function generate_heightmap() {
-        var x = window.current_heightmap_column;
+        var x = window.current_column;
         for (var y = 0; y < window.terrainarray[x].length; y++) {
             var value = window.noise.simplex2(x / window.roughness, y / window.roughness);
             value = Math.round((value + 1) * 128);
@@ -207,21 +205,21 @@
             tileinfo.height = value;
             window.terrainarray[x][y] = tileinfo;
         }
-        if (window.current_heightmap_column < window.terrainarray.length - 1) {
-            if (window.current_heightmap_column % (window.terrainarray.length / 4) === 0) {
-                window.progressbar.progress((window.current_heightmap_column / (window.terrainarray.length / 4)) / 10 + 0.1);
-                window.progressbar.text("Generating perlin noise...");
+        if (window.current_column < window.terrainarray.length - 1) {
+            if (window.current_column % (window.terrainarray.length / 4) === 0) {
+                window.progressbar.progress((window.current_column / (window.terrainarray.length / 4)) / 20 + 0.1);
+                window.progressbar.text("Generating height map...");
             }
-            window.current_heightmap_column += 1;
+            window.current_column += 1;
             setTimeout(generate_heightmap, 10);
         } else {
-            window.current_heightmap_column = 0;
+            window.current_column = 0;
             setTimeout(generate_tiles, 10);
         }
     };
 
     function generate_tiles() {
-        var x = window.current_heightmap_column;
+        var x = window.current_column;
         for (var y = 0; y < window.terrainarray[x].length; y++) {
             var tile = new window.Tile(x, y);
 
@@ -230,41 +228,16 @@
                 window.terrain.addChild(tile);
             }
         }
-        if (window.current_heightmap_column < window.terrainarray.length - 1) {
-            if (window.current_heightmap_column % (window.terrainarray.length / 4) === 0) {
-                window.progressbar.progress((window.current_heightmap_column / (window.terrainarray.length / 4)) / 10 + 0.6);
-                window.progressbar.text("Creating tiles...");
+        if (window.current_column < window.terrainarray.length - 1) {
+            if (window.current_column % (window.terrainarray.length / 4) === 0) {
+                window.progressbar.progress((window.current_column / (window.terrainarray.length / 4)) / 20 + 0.3);
+                window.progressbar.text("Building tiles...");
             }
-            window.current_heightmap_column += 1;
+            window.current_column += 1;
             setTimeout(generate_tiles, 10);
         } else {
-            window.progressbar.progress(1);
-            window.progressbar.text("Click to start!");
-            window.canvas.addEventListener("click", finilize_map);
+            window.forest = new Forest();
         }
-    };
-
-    function finilize_map() {
-        window.canvas.removeEventListener("click", finilize_map);
-        stage.addChild(window.terrain);
-        window.terrain.current_min_tile_x = getMinXTileNumber(0);
-        window.terrain.current_max_tile_x = getMaxXTileNumber(0);
-        window.terrain.current_min_tile_y = getMinYTileNumber(0);
-        window.terrain.current_max_tile_y = getMaxYTileNumber(0);
-
-        window.fpsCounter = new window.createjs.Text("", "22px Audiowide", "white");
-        fpsCounter.lineWidth = 100;
-        fpsCounter.textAlign = "right";
-        fpsCounter.x = window.canvas.width;
-        window.stage.addChild(fpsCounter);
-
-
-        window.createjs.Ticker.addEventListener('tick', tick);
-        window.createjs.Ticker.setFPS(60);
-
-        //register key functions
-        document.onkeydown = handleKeyDown;
-        document.onkeyup = handleKeyUp;
     };
 
     window.Terrain = terrain;
@@ -285,7 +258,6 @@ function getMinYTileNumber(offset) {
 function getMaxYTileNumber(offset) {
     return Math.min(MAPSIZE, Math.round((-offset + screen_height + TILESIZE) / TILESIZE));
 }
-
 
 function isInVisibleArea(element) {
     var minX = -window.terrain.x - TILESIZE;
